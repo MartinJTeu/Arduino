@@ -9,9 +9,11 @@
 
 #include <ESP8266WiFi.h>
 // wifi_set_macaddr() needs "user_interface.h"
-/* extern "C" {
+/*
+extern "C" {
 #include "user_interface.h"
-*/}
+}
+*/
 
 const char* ssid = "your-ssid";
 const char* password = "your-password";
@@ -27,32 +29,32 @@ void setup() {
   // prepare GPIO2
   pinMode(2, OUTPUT);
   digitalWrite(2, 0);
-  
-  // connect to WiFi network
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
 
   // change MAC address (I needed to...)
-//   uint8_t mac[6] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-//   wifi_set_macaddr(STATION_IF, mac);
+//  uint8_t mac[6] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+//  wifi_set_macaddr(STATION_IF, mac);
+  
+  // connect to WiFi network
+  Serial.print("\nConnecting to "); Serial.println(ssid);
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
+
+  char i = 0;
+  while (WiFi.status() != WL_CONNECTED && i++ < 30) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("");
-  Serial.print("Connected to "); Serial.println(ssid);
-  
-  // Start the server
-  server.begin();
-  Serial.println("Server started");
+  if(i == 31){Serial.print("\nCould not connect to "); Serial.println(ssid); delay(500);}
+//  Serial.printf("\nConnection status: %d\n", WiFi.status());
 
   // print the IP address
-  Serial.print("IP address: ");
+  Serial.print("\nConnected, IP address: ");
   Serial.println(WiFi.localIP());
+  
+  // start the server
+  server.begin();
+  Serial.println("Server started");
 }
 
 void loop() {
@@ -106,9 +108,7 @@ void loop() {
   // send response to the client
   client.print(response); delay(1);
   
+  // the client will actually be disconnected when the function returns and 'client' object is destroyed
   client.flush();
   Serial.println("Client disconnected");
-
-  // the client will actually be disconnected 
-  // when the function returns and 'client' object is destroyed
 }

@@ -45,7 +45,7 @@ void setup() {
     delay(500);
     Serial.print(".");
   }
-  if(i == 31){Serial.print("\nCould not connect to "); Serial.println(ssid); delay(500);}
+  if(i == 30){Serial.print("\nCould not connect to "); Serial.println(ssid); delay(500);}
 //  Serial.printf("\nConnection status: %d\n", WiFi.status());
 
   // print the IP address
